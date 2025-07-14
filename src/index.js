@@ -641,6 +641,7 @@ app.get('/', (req, res) => {
             async function displayLeaderboard() {
                 scoreList.innerHTML = '<li>Loading...</li>';
                 try {
+                    // Use a POST request to fetch live data
                     const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php', { method: 'POST' });
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
