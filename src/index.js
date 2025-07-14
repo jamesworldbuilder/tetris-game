@@ -641,7 +641,7 @@ app.get('/', (req, res) => {
             async function displayLeaderboard() {
                 scoreList.innerHTML = '<li>Loading...</li>';
                 try {
-                    const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php?t=' + new Date().getTime());
+                    const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php', { method: 'POST' });
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -671,7 +671,7 @@ app.get('/', (req, res) => {
             async function displayStartScreenLeaderboard() {
                 try {
                     await document.fonts.ready;
-                    const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php?t=' + new Date().getTime());
+                    const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php', { method: 'POST' });
                      if (!response.ok) throw new Error('Network response was not ok');
                     const scores = await response.json();
                     startScoreList.innerHTML = ''; 
