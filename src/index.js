@@ -653,7 +653,7 @@ app.get('/', (req, res) => {
                         scores.forEach((entry, index) => {
                             const li = document.createElement('li');
                             const rank = (index + 1) + '.';
-                            const name = entry.name.padEnd(4);
+                            const name = entry.player.padEnd(4);
                             const scoreText = entry.score.toString().padStart(6, ' ');
                             li.textContent = rank.padEnd(3) + name + scoreText;
                             if (index === 0) {
@@ -681,7 +681,7 @@ app.get('/', (req, res) => {
                         scores.forEach((entry, index) => {
                             const li = document.createElement('li');
                             const rank = (index + 1) + '.';
-                            const name = entry.name.padEnd(4);
+                            const name = entry.player.padEnd(4);
                             const scoreText = entry.score.toString().padStart(6, ' ');
                             li.textContent = rank.padEnd(3) + name + scoreText;
                             if (index === 0) {
