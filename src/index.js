@@ -702,7 +702,7 @@ app.get('/', (req, res) => {
 
             async function submitScore(playerName, playerScore) {
                 const formData = new FormData();
-                formData.append('name', playerName);
+                formData.append('player', playerName);
                 formData.append('score', playerScore);
                 try {
                     const response = await fetch(LEADERBOARD_API_URL + '/update-tetris-scores.php', {
