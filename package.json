@@ -1,6 +1,6 @@
 {
   "name": "tetris-game",
-  "description": "A Tetris game implemented in Node.js with Express for Google Cloud Run",
+  "description": "A Tetris game implemented in Node.js with Express, connected to a Redis database via PHP",
   "version": "1.1.0",
   "private": true,
   "main": "src/index.js",
