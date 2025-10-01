@@ -736,14 +736,31 @@ app.get('/', (req, res) => {
                 if (isAnimatingLineClear) return;
                 pressedKeys.add(e.code);
                 if (gameOver) return;
-                const key = e.key.toLowerCase();
-                if (key === "arrowleft" || key === 'a') { offset.x--; if (collide()) offset.x++; }
-                else if (key === "arrowright" || key === 'd') { offset.x++; if (collide()) offset.x--; }
-                else if (key === "arrowdown" || key === 's') { drop(); }
-                else if (key === "arrowup" || key === 'w') { rotate(); }
-                else if (e.code === "Space") { 
-                    e.preventDefault();
-                    hardDrop(); 
+                
+                // Using e.code, which matches the synthetic event from the on-screen controls
+                switch(e.code) {
+                    case 'ArrowLeft':
+                    case 'KeyA':
+                        offset.x--;
+                        if (collide()) offset.x++;
+                        break;
+                    case 'ArrowRight':
+                    case 'KeyD':
+                        offset.x++;
+                        if (collide()) offset.x--;
+                        break;
+                    case 'ArrowDown':
+                    case 'KeyS':
+                        drop();
+                        break;
+                    case 'ArrowUp':
+                    case 'KeyW':
+                        rotate();
+                        break;
+                    case 'Space':
+                        e.preventDefault();
+                        hardDrop();
+                        break;
                 }
             });
 
