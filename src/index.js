@@ -807,8 +807,7 @@ app.get('/', (req, res) => {
                 }
 
                 if (event.data && event.data.type && event.data.code) {
-                    // 'keydown' or 'keyup'
-                    const eventType = event.data.type; 
+                    const eventType = event.data.type; // 'keydown' or 'keyup'
                     const code = event.data.code;
 
                     // Create and dispatch a synthetic keyboard event
