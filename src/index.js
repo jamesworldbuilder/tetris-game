@@ -239,6 +239,14 @@ app.get('/', (req, res) => {
             const startScreenLeaderboard = document.getElementById('startScreenLeaderboard');
             const loadingGif = document.getElementById('loadingSpinner');
 
+            // Allow communication with parent window 
+            const isEmbedded = (window.self !== window.top);
+            const postParent = (message) => {
+                if (isEmbedded) {
+                    window.parent.postMessage(message, 'https://jamesworldbuilder.github.io');
+                }
+            };
+
             const cols = 10;
             const rows = 20;
             let blockSize = 30;
@@ -768,6 +776,23 @@ app.get('/', (req, res) => {
             window.addEventListener('resize', setupCanvas);
             setupCanvas();
             displayStartScreenLeaderboard();
+
+            // Listen for messages from parent (for on-screen controls)
+            window.addEventListener('message', (event) => {
+                // Check for event.origin for security
+                if (event.data && event.data.type && event.data.code) {
+                    // 'keydown' or 'keyup'
+                    const eventType = event.data.type; 
+                    const code = event.data.code;
+
+                    // Create and dispatch a synthetic keyboard event
+                    const keyboardEvent = new KeyboardEvent(eventType, {
+                        code: code,
+                        bubbles: true
+                    });
+                    document.dispatchEvent(keyboardEvent);
+                }
+            });
         })();
         </script>
     </body>
