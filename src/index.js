@@ -239,11 +239,13 @@ app.get('/', (req, res) => {
             const startScreenLeaderboard = document.getElementById('startScreenLeaderboard');
             const loadingGif = document.getElementById('loadingSpinner');
 
-            // Allow communication with parent window 
+            // Communication with parent window 
             const isEmbedded = (window.self !== window.top);
+            const parentOrigin = 'https://jamesworldbuilder.github.io'; 
             const postParent = (message) => {
                 if (isEmbedded) {
-                    window.parent.postMessage(message, 'https://jamesworldbuilder.github.io');
+                    // Send messages only to the specified origin for security
+                    window.parent.postMessage(message, parentOrigin);
                 }
             };
 
@@ -779,7 +781,11 @@ app.get('/', (req, res) => {
 
             // Listen for messages from parent (for on-screen controls)
             window.addEventListener('message', (event) => {
-                // Check for event.origin for security
+                // Security check to only accept messages from the origin
+                if (event.origin !== parentOrigin) {
+                    return;
+                }
+
                 if (event.data && event.data.type && event.data.code) {
                     // 'keydown' or 'keyup'
                     const eventType = event.data.type; 
