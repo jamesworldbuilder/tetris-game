@@ -633,6 +633,7 @@ app.get('/', (req, res) => {
                 finalScoreElement.textContent = 'Final Score: ' + score;
                 gameOverScreen.style.display = 'flex';
                 displayLeaderboard();
+                postParent('gameEnded'); // Signal that the game has ended
             }
 
             function resetGame() {
@@ -755,6 +756,7 @@ app.get('/', (req, res) => {
                 startScreenLeaderboard.style.display = "none";
                 setupCanvas();
                 resetGame();
+                postParent('gameStarted'); // Signal that the game has started
             });
 
             retryButton.addEventListener("click", () => {
