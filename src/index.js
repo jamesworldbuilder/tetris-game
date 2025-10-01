@@ -759,6 +759,7 @@ app.get('/', (req, res) => {
 
             retryButton.addEventListener("click", () => {
                 resetGame();
+                postParent('gameStarted'); // Signal that a new game has started on retry
             });
 
             leaderboardForm.addEventListener('submit', (event) => {
@@ -779,7 +780,7 @@ app.get('/', (req, res) => {
             setupCanvas();
             displayStartScreenLeaderboard();
 
-            // Listen for messages from parent (for on-screen controls)
+            // Listen for messages from parent (for on-screen controls) 
             window.addEventListener('message', (event) => {
                 // Security check to only accept messages from the origin
                 if (event.origin !== parentOrigin) {
