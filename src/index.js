@@ -7,10 +7,11 @@ app.get('/', (req, res) => {
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://tetris-leaderboard.onrender.com; img-src 'self' data:;">
-        <title>Tetris Game by James</title>
+        <title>Blocks Game by James</title>
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
             * {
                 margin: 0;
                 padding: 0;
@@ -31,56 +32,90 @@ app.get('/', (req, res) => {
                 justify-content: center;
                 align-items: center;
                 position: relative;
-                padding: 1em;
                 overflow: hidden;
+                min-height: 300px; /* Minimum height to ensure playability */
+                min-width: 300px; /* Minimum width to ensure playability */
+                max-width: 380px; /* Maximum width for smaller screens */
+                max-height: 870px; /* Maximum height for larger screens */
+                padding: calc(var(--block-size) * 0.53) calc(var(--block-size) * 0.33) calc(var(--block-size) * 0.33) calc(var(--block-size) * 0.33);
+                margin: 0 auto; /* Center the container horizontally */
             }
             canvas {
                 background-color: #000000;
-                max-width: 100%;
-                max-height: 100%;
+                width: 100%;
+                height: 100%;
                 object-fit: contain;
                 image-rendering: pixelated;
                 image-rendering: -moz-crisp-edges;
                 image-rendering: crisp-edges;
-                overflow: hidden;
+                min-height: 300px; /* Match Space Invaders minimum height */
+                min-width: 300px; /* Match Space Invaders minimum width */
             }
             #loadingSpinner {
-                position: absolute;
-                top: 20%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 48px;
-                height: 48px;
-                border: 5px solid #333; /* Light grey track */
-                border-top: 5px solid #9933ff; /* Purple spinner color */
+                position: relative;
+                width: 24px;
+                height: 24px;
+                border: 3px solid #333;
+                border-top: 3px solid #9933ff;
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
-                z-index: 15;
+                margin: 10px auto;
+            }
+            #gameOverLoadingSpinner {
+                position: relative;
+                width: 24px;
+                height: 24px;
+                border: 3px solid #333;
+                border-top: 3px solid #9933ff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 10px auto;
             }
             @keyframes spin {
-                0% { transform: translate(-50%, -50%) rotate(0deg); }
-                100% { transform: translate(-50%, -50%) rotate(360deg); }
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }
-            #startButton {
+            
+            /* Start Screen Styling - Matching Space Invaders */
+            #startScreen {
                 position: absolute;
-                top: 30%;
-                left: 50%;
-                transform: translate(-50%, -50%);
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                gap: 20px;
+                z-index: 20;
+                padding: 1em;
+            }
+            .hidden {
+                display: none !important;
+            }
+            .title {
+                font-size: 1.5em;
+                color: #663399;
+            }
+            .button {
                 padding: 15px 30px;
-                font-size: 24px;
-                z-index: 10;
-                display: none; /* Hidden by default, shown by JS */
+                background-color: #000000;
+                color: #E0E0E0;
+                border: 2px solid #663399;
+                cursor: pointer;
+                font-family: 'Press Start 2P', cursive;
+                font-size: 0.9em;
             }
+            .button:hover {
+                background-color: #9933FF;
+            }
+
             #startScreenLeaderboard {
-                position: absolute;
-                top: 45%;
-                left: 50%;
-                transform: translateX(-50%);
                 color: #e0e0e0;
                 font-size: 0.7em;
                 text-align: center;
-                z-index: 5;
-                display: none; /* Hidden by default, shown by JS */
+                margin-top: 20px;
             }
             #startScreenLeaderboard h3 {
                 color: #663399; 
@@ -114,13 +149,13 @@ app.get('/', (req, res) => {
                 gap: 15px; 
             }
             #gameOverScreen > div:first-child {
-                color: #663399; /* Purple color for "Game Over" text */
+                color: #663399;
             }
             #finalScore {
                 font-size: 0.8em;
                 margin-top: 10px;
                 margin-bottom: 20px;
-                color: #e0e0e0; /* Reverted from gold */
+                color: #e0e0e0;
             }
             #leaderboardContainer {
                 display: flex;
@@ -166,36 +201,23 @@ app.get('/', (req, res) => {
                 text-transform: uppercase;
                 margin-bottom: 10px;
             }
-            .button {
-                padding: 10px 20px;
-                margin-top: 10px;
-                background-color: #000000;
-                color: #e0e0e0;
-                border: 2px solid #663399;
-                cursor: pointer;
-                font-family: 'Press Start 2P', cursive;
-                display: block;
-                width: 100%;
-                max-width: 200px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .button:hover {
-                background-color: #9933ff;
-            }
         </style>
-        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     </head>
     <body>
         <div class="game-container" id="gameContainer">
             <canvas id="gameCanvas"></canvas>
             
-            <div id="loadingSpinner"></div>
-            <button id="startButton" class="button">Start Game</button>
-
-            <div id="startScreenLeaderboard">
-                <h3>High Scores</h3>
-                <ol id="startScoreList"></ol>
+            <!-- Updated Start Screen with Title and Button matching Space Invaders -->
+            <div id="startScreen">
+                <div class="title">BLOCKS</div>
+                <button id="startButton" class="button">Start Game</button>
+                
+                <!-- Leaderboard on Start Screen - Positioned under the button -->
+                <div id="startScreenLeaderboard">
+                    <h3>High Scores</h3>
+                    <div id="loadingSpinner"></div>
+                    <ol id="startScoreList"></ol>
+                </div>
             </div>
 
             <div id="gameOverScreen">
@@ -205,6 +227,7 @@ app.get('/', (req, res) => {
                 <div id="leaderboardContainer">
                     <div id="leaderboardDisplay">
                         <h3>High Scores</h3>
+                        <div id="gameOverLoadingSpinner"></div>
                         <ol id="scoreList"></ol>
                     </div>
                     <div id="submissionArea">
@@ -226,6 +249,7 @@ app.get('/', (req, res) => {
             const gameContainer = document.getElementById('gameContainer');
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
+            const startScreen = document.getElementById('startScreen');
             const startButton = document.getElementById('startButton');
             const gameOverScreen = document.getElementById('gameOverScreen');
             const retryButton = document.getElementById('retryButton');
@@ -236,15 +260,19 @@ app.get('/', (req, res) => {
             const scoreList = document.getElementById('scoreList');
             const startScoreList = document.getElementById('startScoreList');
             const startScreenLeaderboard = document.getElementById('startScreenLeaderboard');
-            const loadingGif = document.getElementById('loadingSpinner');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const gameOverLoadingSpinner = document.getElementById('gameOverLoadingSpinner');
+
+            // --- Easy Origin Switch ---
+            // Set to true when deploying to GitHub Pages, false for local development
+            const IS_PRODUCTION = true;
+            const PARENT_ORIGIN = IS_PRODUCTION ? 'https://jamesworldbuilder.github.io' : '*';
 
             // Communication with parent window 
             const isEmbedded = (window.self !== window.top);
-            const parentOrigin = 'https://jamesworldbuilder.github.io'; 
             const postParent = (message) => {
                 if (isEmbedded) {
-                    // Send messages only to the specified origin for security
-                    window.parent.postMessage(message, parentOrigin);
+                    window.parent.postMessage(message, PARENT_ORIGIN);
                 }
             };
 
@@ -275,6 +303,11 @@ app.get('/', (req, res) => {
             let isFlashingScore = false;
             let scoreFlashStartTime = 0;
             const scoreFlashDuration = 500;
+
+            // --- Pause State for Resizing ---
+            let isPaused = false;
+            let resizeTimeout = null;
+            const RESIZE_DELAY = 500; // Half second delay
 
             const colors = ['#6ed2d8', '#5a6dc8', '#d89b4b', '#e0e050', '#6ac26a', '#b351d1', '#d15a5a'];
             const pieces = {
@@ -390,16 +423,30 @@ app.get('/', (req, res) => {
             function setupCanvas() { 
                 const containerWidth = gameContainer.offsetWidth; 
                 const containerHeight = gameContainer.offsetHeight; 
-                const blockSizeW = containerWidth / cols; 
-                const blockSizeH = containerHeight / rows; 
-                blockSize = Math.floor(Math.min(blockSizeW, blockSizeH)); 
-                canvas.width = cols * blockSize; 
-                canvas.height = rows * blockSize; 
+                
+                // Calculate optimal block size based on container
+                const blockSizeW = containerWidth / cols;
+                const blockSizeH = containerHeight / rows;
+                blockSize = Math.floor(Math.min(blockSizeW, blockSizeH));
+                
+                // Set reasonable bounds for block size
+                const minBlockSize = 15;
+                const maxBlockSize = 40;
+                blockSize = Math.max(minBlockSize, Math.min(maxBlockSize, blockSize));
+                
+                // Set canvas dimensions - this sets the actual pixel dimensions
+                canvas.width = cols * blockSize;
+                canvas.height = rows * blockSize;
+                
+                // Reset any CSS transforms that might interfere
+                canvas.style.transform = 'none';
+                
                 ctx.mozImageSmoothingEnabled = false; 
                 ctx.webkitImageSmoothingEnabled = false; 
                 ctx.msImageSmoothingEnabled = false; 
                 ctx.imageSmoothingEnabled = false; 
-                if (animationFrameId) { draw(); } 
+                
+                if (animationFrameId && !isPaused) { draw(); } 
             }
 
             function drawBlock(x, y, color) { 
@@ -462,9 +509,34 @@ app.get('/', (req, res) => {
                 ctx.fillText(text, x + width / 2, y - bevelOffset + height / 2);
             }
 
+            function drawPauseOverlay() {
+                // Draw semi-transparent overlay
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw "Resizing" message in Arial font
+                ctx.fillStyle = '#FFFFFF'; 
+                ctx.font = 'bold ' + (blockSize * 0.8) + 'px Arial'; 
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Resizing...', canvas.width / 2, canvas.height / 2);
+            }
+
             function draw() { 
                 ctx.clearRect(0, 0, canvas.width, canvas.height); 
 
+                // Pause the game during resizing
+                if (isPaused) {
+                    // Draw the current game state with pause overlay
+                    drawGameElements();
+                    drawPauseOverlay();
+                    return;
+                }
+
+                drawGameElements();
+            }
+
+            function drawGameElements() {
                 const scoreBoxHeight = (blockSize * 0.7) + 20;
                 const keySize = blockSize;
                 const keyPadding = blockSize * 0.2;
@@ -513,7 +585,6 @@ app.get('/', (req, res) => {
                         });
                     }
                 }); 
-                
                 if (currentPiece) { 
                     const { shape, color } = currentPiece; 
                     shape.forEach((row, y) => { 
@@ -590,6 +661,16 @@ app.get('/', (req, res) => {
                     return;
                 }
 
+                // Pause the game during resizing
+                if (isPaused) {
+                    // Continue checking for resume but don't update game logic
+                    animationFrameId = requestAnimationFrame(update);
+                    draw();
+                    return;
+                }
+
+                animationFrameId = requestAnimationFrame(update);
+
                 if (isAnimatingLineClear) {
                     const elapsedTime = performance.now() - lineClearStartTime;
                     if (elapsedTime >= lineClearDuration) {
@@ -624,7 +705,6 @@ app.get('/', (req, res) => {
                 }
 
                 draw();
-                animationFrameId = requestAnimationFrame(update);
             }
 
             function endGame() {
@@ -633,7 +713,7 @@ app.get('/', (req, res) => {
                 finalScoreElement.textContent = 'Final Score: ' + score;
                 gameOverScreen.style.display = 'flex';
                 displayLeaderboard();
-                postParent('gameEnded'); // Signal that the game has ended
+                postParent('gameEnded');
             }
 
             function resetGame() {
@@ -650,15 +730,21 @@ app.get('/', (req, res) => {
             }
             
             async function displayLeaderboard() {
-                scoreList.innerHTML = '<li>Loading...</li>';
+                // Show the loading spinner and hide the score list
+                gameOverLoadingSpinner.style.display = 'block';
+                scoreList.innerHTML = '';
+                
                 try {
-                    // Use a POST request to fetch live data
                     const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php', { method: 'POST' });
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     const scores = await response.json();
+                    
+                    // Hide the loading spinner and show the scores
+                    gameOverLoadingSpinner.style.display = 'none';
                     scoreList.innerHTML = '';
+                    
                     if (scores.length === 0) {
                         scoreList.innerHTML = '<li>Be the first!</li>';
                     } else {
@@ -676,6 +762,8 @@ app.get('/', (req, res) => {
                     }
                 } catch (error) {
                     console.error('Failed to fetch leaderboard:', error);
+                    // Hide the loading spinner and show error message
+                    gameOverLoadingSpinner.style.display = 'none';
                     scoreList.innerHTML = '<li>Error loading scores</li>';
                 }
             }
@@ -706,9 +794,8 @@ app.get('/', (req, res) => {
                     console.error('Failed to fetch start screen leaderboard:', error);
                     startScoreList.innerHTML = '<li>--:--</li>';
                 } finally {
-                    loadingGif.style.display = 'none';
-                    startButton.style.display = 'block';
-                    startScreenLeaderboard.style.display = 'block';
+                    // Hide loading spinner after leaderboard is loaded
+                    loadingSpinner.style.display = 'none';
                 }
             }
 
@@ -733,11 +820,10 @@ app.get('/', (req, res) => {
             }
 
             document.addEventListener("keydown", (e) => {
-                if (isAnimatingLineClear) return;
+                if (isPaused || isAnimatingLineClear) return;
                 pressedKeys.add(e.code);
                 if (gameOver) return;
                 
-                // Using e.code, which matches the synthetic event from the on-screen controls
                 switch(e.code) {
                     case 'ArrowLeft':
                     case 'KeyA':
@@ -769,16 +855,17 @@ app.get('/', (req, res) => {
             });
 
             startButton.addEventListener("click", () => {
-                startButton.style.display = "none";
-                startScreenLeaderboard.style.display = "none";
+                startScreen.style.display = "none";
                 setupCanvas();
                 resetGame();
-                postParent('gameStarted'); // Signal that the game has started
+                postParent('gameStarted');
             });
 
             retryButton.addEventListener("click", () => {
+                gameOverScreen.style.display = "none";
+                setupCanvas();
                 resetGame();
-                postParent('gameStarted'); // Signal that a new game has started on retry
+                postParent('gameStarted');
             });
 
             leaderboardForm.addEventListener('submit', (event) => {
@@ -795,22 +882,41 @@ app.get('/', (req, res) => {
                 e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
             });
 
-            window.addEventListener('resize', setupCanvas);
+            // --- Resize Event Listener with Pause Behavior ---
+            window.addEventListener('resize', () => {
+                // Clear any existing timeout
+                if (resizeTimeout) {
+                    clearTimeout(resizeTimeout);
+                }
+                
+                // Pause the game
+                isPaused = true;
+                
+                // Set up the resize timeout
+                resizeTimeout = setTimeout(() => {
+                    setupCanvas();
+                    
+                    // Resume the game
+                    isPaused = false;
+                    resizeTimeout = null;
+                    
+                    // Reset lastTime to avoid large deltaTime after pause
+                    lastTime = performance.now();
+                }, RESIZE_DELAY);
+            });
+
+            // Initialize the game
             setupCanvas();
             displayStartScreenLeaderboard();
 
-            // Listen for messages from parent (for on-screen controls) 
             window.addEventListener('message', (event) => {
-                // Security check to only accept messages from the origin
-                if (event.origin !== parentOrigin) {
-                    return;
-                }
+                // Check if origin is allowed using the Easy Origin Switch
+                if (PARENT_ORIGIN !== '*' && event.origin !== PARENT_ORIGIN) return;
 
                 if (event.data && event.data.type && event.data.code) {
-                    const eventType = event.data.type; // 'keydown' or 'keyup'
+                    const eventType = event.data.type;
                     const code = event.data.code;
 
-                    // Create and dispatch a synthetic keyboard event
                     const keyboardEvent = new KeyboardEvent(eventType, {
                         code: code,
                         bubbles: true
@@ -823,7 +929,6 @@ app.get('/', (req, res) => {
     </body>
     </html>
     `;
-
     res.send(gameContent);
 });
 
