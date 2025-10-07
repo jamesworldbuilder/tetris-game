@@ -35,7 +35,6 @@ app.get('/', (req, res) => {
                 overflow: hidden;
             }
             canvas {
-                border: 3px solid #663399;
                 background-color: #000000;
                 max-width: 100%;
                 max-height: 100%;
@@ -514,6 +513,7 @@ app.get('/', (req, res) => {
                         });
                     }
                 }); 
+                
                 if (currentPiece) { 
                     const { shape, color } = currentPiece; 
                     shape.forEach((row, y) => { 
