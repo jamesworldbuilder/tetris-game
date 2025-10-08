@@ -33,8 +33,8 @@ app.get('/', (req, res) => {
                 align-items: center;
                 position: relative;
                 overflow: hidden;
-                min-height: 300px; /* Minimum height to ensure playability */
-                min-width: 300px; /* Minimum width to ensure playability */
+                min-height: 700px; /* Minimum height to ensure playability */
+                min-width: 350px; /* Minimum width to ensure playability */
                 max-width: 380px; /* Maximum width for smaller screens */
                 max-height: 870px; /* Maximum height for larger screens */
                 padding: calc(var(--block-size) * 0.53) calc(var(--block-size) * 0.33) calc(var(--block-size) * 0.33) calc(var(--block-size) * 0.33);
@@ -48,8 +48,8 @@ app.get('/', (req, res) => {
                 image-rendering: pixelated;
                 image-rendering: -moz-crisp-edges;
                 image-rendering: crisp-edges;
-                min-height: 300px; /* Match Space Invaders minimum height */
-                min-width: 300px; /* Match Space Invaders minimum width */
+                min-height: 700px; 
+                min-width: 350px; 
             }
             #loadingSpinner {
                 position: relative;
@@ -76,9 +76,11 @@ app.get('/', (req, res) => {
                 100% { transform: rotate(360deg); }
             }
             
-            /* Start Screen Styling - Matching Space Invaders */
+            /* Start Screen Styling */
             #startScreen {
                 position: absolute;
+                top: 0;
+                left: 0;
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.9);
@@ -90,6 +92,11 @@ app.get('/', (req, res) => {
                 gap: 20px;
                 z-index: 20;
                 padding: 1em;
+                box-sizing: border-box;
+                min-height: 700px;
+                min-width: 350px;
+                max-width: 380px;
+                max-height: 870px;
             }
             .hidden {
                 display: none !important;
@@ -97,6 +104,12 @@ app.get('/', (req, res) => {
             .title {
                 font-size: 1.5em;
                 color: #663399;
+                width: 100%;
+                text-align: center;
+                display: block;
+                margin: 0 auto;
+                padding: 0;
+                line-height: 1.2;
             }
             .button {
                 padding: 15px 30px;
@@ -106,6 +119,7 @@ app.get('/', (req, res) => {
                 cursor: pointer;
                 font-family: 'Press Start 2P', cursive;
                 font-size: 0.9em;
+                margin: 0 auto;
             }
             .button:hover {
                 background-color: #9933FF;
@@ -116,6 +130,9 @@ app.get('/', (req, res) => {
                 font-size: 0.7em;
                 text-align: center;
                 margin-top: 20px;
+                width: 100%;
+                max-height: 200px;
+                overflow-y: auto;
             }
             #startScreenLeaderboard h3 {
                 color: #663399; 
@@ -124,6 +141,9 @@ app.get('/', (req, res) => {
             #startScreenLeaderboard ol {
                 list-style-type: none;
                 padding: 0;
+                margin: 0 auto;
+                display: inline-block;
+                text-align: left;
             }
             #startScreenLeaderboard li {
                 margin-bottom: 5px;
@@ -133,6 +153,8 @@ app.get('/', (req, res) => {
             }
             #gameOverScreen {
                 position: absolute;
+                top: 0;
+                left: 0;
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.9);
@@ -147,15 +169,25 @@ app.get('/', (req, res) => {
                 padding: 1em;
                 text-align: center;
                 gap: 15px; 
+                box-sizing: border-box;
+                /* Match the same constraints as game-container */
+                min-height: 700px;
+                min-width: 350px;
+                max-width: 380px;
+                max-height: 870px;
             }
             #gameOverScreen > div:first-child {
                 color: #663399;
+                width: 100%;
+                text-align: center;
             }
             #finalScore {
                 font-size: 0.8em;
                 margin-top: 10px;
                 margin-bottom: 20px;
                 color: #e0e0e0;
+                width: 100%;
+                text-align: center;
             }
             #leaderboardContainer {
                 display: flex;
@@ -169,6 +201,8 @@ app.get('/', (req, res) => {
                 font-size: 0.4em;
                 text-align: center;
                 width: 100%;
+                max-height: 200px;
+                overflow-y: auto;
             }
             #leaderboardDisplay h3 {
                 color: #663399; 
@@ -177,6 +211,7 @@ app.get('/', (req, res) => {
             #leaderboardDisplay ol {
                 text-align: left;
                 display: inline-block;
+                margin: 0 auto;
             }
             #leaderboardDisplay li {
                 margin-bottom: 5px;
@@ -185,6 +220,7 @@ app.get('/', (req, res) => {
             #submissionArea {
                 font-size: 0.5em;
                 width: 100%;
+                text-align: center;
             }
             #leaderboardForm label {
                 display: block;
@@ -200,6 +236,60 @@ app.get('/', (req, res) => {
                 text-align: center;
                 text-transform: uppercase;
                 margin-bottom: 10px;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+            }
+
+            /* Mobile-specific adjustments */
+            @media (max-width: 768px) {
+                .game-container {
+                    min-height: unset;
+                    min-width: unset;
+                    max-width: unset;
+                    max-height: unset;
+                    height: 100vh;
+                    width: 100%;
+                    padding: 20px;
+                }
+                
+                #startScreen, #gameOverScreen {
+                    min-height: unset;
+                    min-width: unset;
+                    max-width: unset;
+                    max-height: unset;
+                    height: 100%;
+                    width: 100%;
+                }
+                
+                canvas {
+                    min-height: unset;
+                    min-width: unset;
+                }
+                
+                .title {
+                    font-size: 1.2em;
+                }
+                
+                .button {
+                    padding: 12px 24px;
+                    font-size: 0.8em;
+                }
+                
+                #startScreenLeaderboard {
+                    font-size: 0.6em;
+                    max-height: 150px;
+                }
+                
+                #gameOverScreen {
+                    font-size: 1.2em;
+                    gap: 10px;
+                }
+                
+                #leaderboardDisplay {
+                    font-size: 0.35em;
+                    max-height: 150px;
+                }
             }
         </style>
     </head>
@@ -207,12 +297,11 @@ app.get('/', (req, res) => {
         <div class="game-container" id="gameContainer">
             <canvas id="gameCanvas"></canvas>
             
-            <!-- Updated Start Screen with Title and Button matching Space Invaders -->
             <div id="startScreen">
                 <div class="title">BLOCKS</div>
                 <button id="startButton" class="button">Start Game</button>
                 
-                <!-- Leaderboard on Start Screen - Positioned under the button -->
+                <!-- Leaderboard on Start Screen -->
                 <div id="startScreenLeaderboard">
                     <h3>High Scores</h3>
                     <div id="loadingSpinner"></div>
@@ -265,7 +354,7 @@ app.get('/', (req, res) => {
 
             // --- Easy Origin Switch ---
             // Set to true when deploying to GitHub Pages, false for local development
-            const IS_PRODUCTION = true;
+            const IS_PRODUCTION = false;
             const PARENT_ORIGIN = IS_PRODUCTION ? 'https://jamesworldbuilder.github.io' : '*';
 
             // Communication with parent window 
@@ -663,7 +752,7 @@ app.get('/', (req, res) => {
 
                 // Pause the game during resizing
                 if (isPaused) {
-                    // Continue checking for resume but don't update game logic
+                    // Continue checking for resume game but don't update game logic
                     animationFrameId = requestAnimationFrame(update);
                     draw();
                     return;
@@ -905,9 +994,24 @@ app.get('/', (req, res) => {
                 }, RESIZE_DELAY);
             });
 
-            // Initialize the game
+            // Initialize the game - wait for fonts to load before showing start screen
+            function initializeGame() {
+                document.fonts.ready.then(() => {
+                    // Ensure fonts are fully loaded before showing start screen
+                    loadingSpinner.style.display = 'none';
+                    startScreen.style.display = 'flex';
+                    displayStartScreenLeaderboard();
+                }).catch((error) => {
+                    console.error('Error loading fonts:', error);
+                    // Fallback: hide spinner and show start screen even if fonts fail
+                    loadingSpinner.style.display = 'none';
+                    startScreen.style.display = 'flex';
+                    displayStartScreenLeaderboard();
+                });
+            }
+
             setupCanvas();
-            displayStartScreenLeaderboard();
+            initializeGame();
 
             window.addEventListener('message', (event) => {
                 // Check if origin is allowed using the Easy Origin Switch
@@ -929,6 +1033,7 @@ app.get('/', (req, res) => {
     </body>
     </html>
     `;
+
     res.send(gameContent);
 });
 
