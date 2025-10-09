@@ -591,7 +591,7 @@ app.get('/', (req, res) => {
                     ctx.fillStyle = 'rgba(224, 224, 224, 0.5)';
                 }
                 
-                const fontSize = height * 0.5;
+                const fontSize = height * 0.45;
                 ctx.font = 'bold ' + fontSize + 'px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -627,7 +627,7 @@ app.get('/', (req, res) => {
 
             function drawGameElements() {
                 const scoreBoxHeight = (blockSize * 0.7) + 20;
-                const keySize = blockSize;
+                const keySize = blockSize * 1.1;
                 const keyPadding = blockSize * 0.2;
                 const topY = scoreBoxHeight + keySize;
                 const centerX = canvas.width / 2;
@@ -641,7 +641,7 @@ app.get('/', (req, res) => {
 
                 const spacebarY = topY + keySize + keyPadding;
                 const spacebarWidth = totalArrowKeysWidth;
-                const spacebarHeight = keySize * 0.7;
+                const spacebarHeight = keySize * 0.9;
                 const spacebarX = centerX - spacebarWidth / 2;
                 drawKey(spacebarX, spacebarY, spacebarWidth, spacebarHeight, 'spacebar', pressedKeys.has('Space'));
 
@@ -859,11 +859,14 @@ app.get('/', (req, res) => {
             
             async function displayStartScreenLeaderboard() {
                 try {
+                    startScoreList.innerHTML = ''; 
+                    loadingSpinner.style.display = 'block';
+
                     await document.fonts.ready;
                     const response = await fetch(LEADERBOARD_API_URL + '/get-tetris-scores.php', { method: 'POST' });
-                     if (!response.ok) throw new Error('Network response was not ok');
+                    if (!response.ok) throw new Error('Network response was not ok');
                     const scores = await response.json();
-                    startScoreList.innerHTML = ''; 
+                    
                     if (scores.length === 0) {
                         startScoreList.innerHTML = '<li>Be the first!</li>';
                     } else {
@@ -947,15 +950,16 @@ app.get('/', (req, res) => {
                 startScreen.style.display = "none";
                 setupCanvas();
                 resetGame();
-                postParent('gameStarted');
+                postParent("startButtonPressed"); // unified event for mobile controls
             });
 
             retryButton.addEventListener("click", () => {
                 gameOverScreen.style.display = "none";
                 setupCanvas();
                 resetGame();
-                postParent('gameStarted');
+                postParent("startButtonPressed"); // unified event for mobile controls
             });
+
 
             leaderboardForm.addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -998,15 +1002,15 @@ app.get('/', (req, res) => {
             function initializeGame() {
                 document.fonts.ready.then(() => {
                     // Ensure fonts are fully loaded before showing start screen
-                    loadingSpinner.style.display = 'none';
                     startScreen.style.display = 'flex';
                     displayStartScreenLeaderboard();
+                    loadingSpinner.style.display = 'none';
                 }).catch((error) => {
                     console.error('Error loading fonts:', error);
                     // Fallback: hide spinner and show start screen even if fonts fail
-                    loadingSpinner.style.display = 'none';
                     startScreen.style.display = 'flex';
                     displayStartScreenLeaderboard();
+                    loadingSpinner.style.display = 'none';
                 });
             }
 
