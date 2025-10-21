@@ -1003,14 +1003,14 @@ app.get('/', (req, res) => {
                 document.fonts.ready.then(() => {
                     // Ensure fonts are fully loaded before showing start screen
                     startScreen.style.display = 'flex';
+                    // Call the function to fetch and display the leaderboard
+                    // Showing/hiding the spinner 
                     displayStartScreenLeaderboard();
-                    loadingSpinner.style.display = 'none';
                 }).catch((error) => {
                     console.error('Error loading fonts:', error);
-                    // Fallback: hide spinner and show start screen even if fonts fail
+                    // Fallback: show start screen and try to load leaderboard even if fonts fail
                     startScreen.style.display = 'flex';
                     displayStartScreenLeaderboard();
-                    loadingSpinner.style.display = 'none';
                 });
             }
 
